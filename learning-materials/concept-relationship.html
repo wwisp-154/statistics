@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>三个概念的关系 · 概念关系说明</title>
+<style>
+  :root {
+    --ink: #1f1d1a;
+    --muted: #8a857e;
+    --line: #e6e2dc;
+    --paper: #faf9f7;
+    --accent: #c15f3c;
+    --accent-soft: #f6e8e1;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.75;
+    padding: 60px 24px 100px;
+  }
+  .page { max-width: 720px; margin: 0 auto; }
+  header { margin-bottom: 72px; }
+  .kicker { font-size: 12px; letter-spacing: 0.25em; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; }
+  h1 { font-size: 34px; font-weight: 600; }
+  .sub { color: var(--muted); margin-top: 10px; font-size: 15px; }
+  section { margin-bottom: 88px; }
+  .num { font-size: 13px; color: var(--accent); font-weight: 600; letter-spacing: 0.1em; margin-bottom: 8px; }
+  h2 { font-size: 21px; font-weight: 600; margin-bottom: 20px; }
+  p.lead { font-size: 15.5px; max-width: 580px; }
+  .dim { color: var(--muted); font-size: 13.5px; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--line); }
+  a:hover { border-bottom-color: var(--accent); }
+  code { font-family: Consolas, monospace; font-size: 0.9em; background: var(--accent-soft); padding: 1px 6px; border-radius: 4px; }
+  .src { margin-top: 18px; font-size: 12.5px; color: var(--muted); }
+  .fig { margin: 32px 0 8px; }
+  .fig svg { width: 100%; height: auto; display: block; }
+  .caption { font-size: 12.5px; color: var(--muted); margin-top: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 8px; }
+  th { text-align: left; font-weight: 600; padding: 12px 14px; border-bottom: 2px solid var(--ink); white-space: nowrap; }
+  td { padding: 12px 14px; border-bottom: 1px solid var(--line); color: var(--muted); vertical-align: top; }
+  td:first-child { color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .rel { border-top: 1px solid var(--line); padding: 22px 0; }
+  .rel h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+  .rel p { font-size: 14.5px; color: var(--muted); max-width: 580px; }
+  .rel p b { color: var(--ink); }
+  footer { margin-top: 96px; padding-top: 24px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+  footer a { margin-right: 20px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="kicker">Concept · Relationship</div>
+  <h1>上下文 · Agent · Skill：三个概念如何咬合</h1>
+  <div class="sub">一图 + 一表 + 三段说明。全部论断可点回三份学习资料的原始出处。</div>
+</header>
+
+<!-- ============ 1 一张图 ============ -->
+<section>
+  <div class="num">01 / 总览</div>
+  <h2>一张图看懂</h2>
+  <div class="fig">
+    <svg viewBox="0 0 680 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="三概念关系图">
+      <g font-family="PingFang SC, Microsoft YaHei, sans-serif">
+        <!-- agent loop -->
+        <rect x="30" y="60" width="150" height="64" rx="8" fill="#f6e8e1"/>
+        <text x="105" y="88" font-size="14" font-weight="bold" text-anchor="middle" fill="#c15f3c">Agent</text>
+        <text x="105" y="108" font-size="11" text-anchor="middle" fill="#8a857e">LLM 动态决定流程</text>
+
+        <path d="M180 92 L250 92" stroke="#c15f3c" stroke-width="1.5"/>
+        <path d="M244 87 L251 92 L244 97" fill="none" stroke="#c15f3c" stroke-width="1.5"/>
+        <rect x="255" y="60" width="150" height="64" rx="8" fill="none" stroke="#c15f3c" stroke-width="1.5"/>
+        <text x="330" y="88" font-size="14" font-weight="bold" text-anchor="middle" fill="#c15f3c">读上下文</text>
+        <text x="330" y="108" font-size="11" text-anchor="middle" fill="#8a857e">决策只基于窗口内容</text>
+
+        <path d="M405 92 L475 92" stroke="#8a857e" stroke-width="1.5"/>
+        <path d="M469 87 L476 92 L469 97" fill="none" stroke="#8a857e" stroke-width="1.5"/>
+        <rect x="480" y="60" width="150" height="64" rx="8" fill="none" stroke="#e6e2dc"/>
+        <text x="555" y="88" font-size="14" font-weight="bold" text-anchor="middle" fill="#1f1d1a">行动</text>
+        <text x="555" y="108" font-size="11" text-anchor="middle" fill="#8a857e">调工具 / 写代码 / 检索</text>
+
+        <path d="M555 124 L555 175" stroke="#8a857e" stroke-width="1.5"/>
+        <path d="M550 169 L555 176 L560 169" fill="none" stroke="#8a857e" stroke-width="1.5"/>
+        <rect x="480" y="180" width="150" height="50" rx="8" fill="none" stroke="#e6e2dc"/>
+        <text x="555" y="210" font-size="13" text-anchor="middle" fill="#1f1d1a">结果写回上下文</text>
+
+        <path d="M480 205 L200 205 Q 105 205 105 130" fill="none" stroke="#8a857e" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <path d="M100 138 L105 129 L111 137" fill="none" stroke="#8a857e" stroke-width="1.5"/>
+        <text x="215" y="228" font-size="12" fill="#8a857e">循环往复，直到任务完成</text>
+
+        <!-- context window frame -->
+        <rect x="240" y="252" width="420" height="58" rx="8" fill="#f6e8e1"/>
+        <text x="450" y="276" font-size="13.5" font-weight="bold" text-anchor="middle" fill="#c15f3c">上下文窗口（有限 · 会被摊薄 → context rot）</text>
+        <text x="450" y="298" font-size="11.5" text-anchor="middle" fill="#8a857e">历史 · 工具结果 · 检索内容 —— 装不下时：压缩 / 笔记 / 子代理</text>
+
+        <!-- skill feeding -->
+        <rect x="0" y="252" width="200" height="58" rx="8" fill="none" stroke="#c15f3c" stroke-width="1.5"/>
+        <text x="100" y="276" font-size="13.5" font-weight="bold" text-anchor="middle" fill="#c15f3c">Skill 技能库</text>
+        <text x="100" y="298" font-size="11.5" text-anchor="middle" fill="#8a857e">沉淀的可复用任务知识</text>
+        <path d="M100 250 Q 200 190 268 128" fill="none" stroke="#c15f3c" stroke-width="1.2" stroke-dasharray="4 3"/>
+        <path d="M261 130 L270 126 L269 136" fill="none" stroke="#c15f3c" stroke-width="1.2"/>
+        <text x="118" y="176" font-size="11" fill="#c15f3c">按需注入（渐进式披露）</text>
+      </g>
+    </svg>
+    <div class="caption">Agent 的每一步决策都发生在一个小舞台（上下文窗口）上；Skill 是后台剧本库，在合适的幕次把正确的剧本递上台。</div>
+  </div>
+</section>
+
+<!-- ============ 2 一张表 ============ -->
+<section>
+  <div class="num">02 / 对比</div>
+  <h2>一张表分清</h2>
+  <table>
+    <tr><th></th><th>是什么</th><th>解决什么问题</th><th>形态</th></tr>
+    <tr>
+      <td>上下文</td>
+      <td>模型每次采样看到的全部 token</td>
+      <td>决策的"依据"，但是有限资源且有 context rot</td>
+      <td>一个窗口（系统提示+历史+检索…）</td>
+    </tr>
+    <tr>
+      <td>Agent</td>
+      <td>LLM 动态决定流程与工具使用的系统</td>
+      <td>开放式的、步骤无法预知的任务</td>
+      <td>LLM + 规划/记忆/工具 的循环</td>
+    </tr>
+    <tr>
+      <td>Skill</td>
+      <td>含 SKILL.md 的文件夹，程序性知识包</td>
+      <td>同一本事不用每次现教，跨产品可移植</td>
+      <td>目录（元数据→正文→资源 三层按需加载）</td>
+    </tr>
+  </table>
+</section>
+
+<!-- ============ 3 三段说明 ============ -->
+<section>
+  <div class="num">03 / 关键关系</div>
+  <h2>三条咬合的齿轮</h2>
+  <div class="rel">
+    <h3>① 上下文如何影响 Agent 的工作</h3>
+    <p>Agent 的每一步决策<b>只能基于窗口里的内容</b>——看不见的就等于不存在。所以上下文质量直接决定 Agent 每一步的决策质量：塞太少，它缺信息瞎猜；塞太多，context rot 让它回忆不准。原文给的答案是把它当<b>有限资源</b>经营，追求"最小的高信号 token 集"，装不下就用压缩、笔记、子代理三种手段腾地方。</p>
+  </div>
+  <div class="rel">
+    <h3>② Skill 如何沉淀可复用的任务知识</h3>
+    <p>老师傅的经验如果每次都口头教，既贵又不稳定。Skill 把"怎么做这类任务"写成<b>文件夹</b>（SKILL.md + 脚本 + 参考文档），通过渐进式披露三层的机制——启动时只占约 100 tokens 的元数据，激活才读正文，资源按需取用——让知识<b>常驻库存、按需上台</b>，可捆绑的内容量接近无上限。</p>
+  </div>
+  <div class="rel">
+    <h3>③ 三者合起来：一个自洽的分工</h3>
+    <p><b>上下文</b>是有限的工作台，<b>Agent</b>是在工作台上做决策的循环，<b>Skill</b>是让对的知识在对的时机登上工作台的机制。没有 Skill，Agent 每次都现学、上下文被教程塞爆；没有上下文工程，Skill 注入得再好也会被垃圾信息淹没——三者缺一，系统都跑不利索。</p>
+  </div>
+  <p class="src">出处 · <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank">Agent 定义 ↗</a>　<a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank">上下文工程 ↗</a>　<a href="https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills" target="_blank">Skill 与渐进式披露 ↗</a></p>
+</section>
+
+<footer>
+  概念关系说明完 · 三份配套资料见同目录：
+  <a href="agent.html">agent.html</a>
+  <a href="llm-context.html">llm-context.html</a>
+  <a href="skill.html">skill.html</a>
+</footer>
+</div>
+</body>
+</html>
