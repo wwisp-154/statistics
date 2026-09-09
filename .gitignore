@@ -1,0 +1,21 @@
+# ===== 敏感信息（绝不能上传）=====
+# 令牌、密钥、凭据
+*.key
+*.pem
+*.p12
+.env
+.env.*
+credentials*.json
+*token*.txt
+secrets*.md
+# WorkBuddy 会话数据（可能含对话记录与凭据缓存）
+.workbuddy/memory/
+.workbuddy/*.log
+
+# ===== 系统与编辑器杂项 =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== 保留项目级 Skill =====
+!.workbuddy/skills/
