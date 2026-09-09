@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent · 概念学习资料</title>
+<style>
+  :root {
+    --ink: #1f1d1a;
+    --muted: #8a857e;
+    --line: #e6e2dc;
+    --paper: #faf9f7;
+    --accent: #c15f3c;
+    --accent-soft: #f6e8e1;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.75;
+    padding: 60px 24px 100px;
+  }
+  .page { max-width: 720px; margin: 0 auto; }
+  header { margin-bottom: 72px; }
+  .kicker {
+    font-size: 12px; letter-spacing: 0.25em; color: var(--muted);
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  h1 { font-size: 34px; font-weight: 600; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); margin-top: 10px; font-size: 15px; }
+  section { margin-bottom: 88px; }
+  .num { font-size: 13px; color: var(--accent); font-weight: 600; letter-spacing: 0.1em; margin-bottom: 8px; }
+  h2 { font-size: 21px; font-weight: 600; margin-bottom: 20px; }
+  p.lead { font-size: 15.5px; max-width: 560px; }
+  .dim { color: var(--muted); font-size: 13.5px; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--line); }
+  a:hover { border-bottom-color: var(--accent); }
+  code, .mono {
+    font-family: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+    font-size: 0.9em; background: var(--accent-soft); padding: 1px 6px;
+    border-radius: 4px; color: var(--ink);
+  }
+  .src { margin-top: 18px; font-size: 12.5px; color: var(--muted); }
+  .oneliner { font-size: 24px; font-weight: 600; line-height: 1.6; margin-top: 28px; }
+  .oneliner em { font-style: normal; color: var(--accent); }
+  .mine {
+    margin-top: 24px; padding: 18px 22px; border-left: 2px solid var(--accent);
+    background: var(--accent-soft); border-radius: 0 8px 8px 0; font-size: 14.5px;
+  }
+  .mine b { color: var(--accent); }
+  .fig { margin: 32px 0 8px; }
+  .fig svg { width: 100%; height: auto; display: block; }
+  .caption { font-size: 12.5px; color: var(--muted); margin-top: 10px; }
+  .fields { margin-top: 8px; }
+  .field {
+    display: flex; gap: 20px; padding: 16px 0; border-top: 1px solid var(--line);
+    align-items: baseline;
+  }
+  .field:last-child { border-bottom: 1px solid var(--line); }
+  .fname { font-size: 14.5px; min-width: 150px; font-weight: 600; }
+  .fdesc { font-size: 14px; color: var(--muted); flex: 1; }
+  .q { border-top: 1px solid var(--line); padding: 28px 0; }
+  .q-head { display: flex; gap: 12px; align-items: baseline; margin-bottom: 6px; }
+  .stars { color: var(--accent); font-size: 13px; letter-spacing: 2px; white-space: nowrap; }
+  .q-title { font-size: 15.5px; font-weight: 600; }
+  .opts { display: flex; flex-direction: column; gap: 8px; }
+  .opt {
+    text-align: left; font-size: 14.5px; font-family: inherit;
+    background: none; border: 1px solid var(--line); border-radius: 8px;
+    padding: 11px 16px; cursor: pointer; color: var(--ink);
+    transition: border-color .15s, background .15s;
+  }
+  .opt:hover { border-color: var(--accent); }
+  .opt.correct { background: var(--accent-soft); border-color: var(--accent); font-weight: 600; }
+  .opt.wrong { color: var(--muted); text-decoration: line-through; }
+  .opt:disabled { cursor: default; }
+  .why {
+    display: none; margin-top: 12px; font-size: 13.5px; color: var(--muted);
+    border-left: 2px solid var(--accent); padding-left: 14px;
+  }
+  .why.show { display: block; }
+  footer {
+    margin-top: 96px; padding-top: 24px; border-top: 1px solid var(--line);
+    font-size: 13px; color: var(--muted);
+  }
+  footer a { margin-right: 20px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="kicker">Concept · Study Note 01</div>
+  <h1>Agent（智能体）</h1>
+  <div class="sub">读四节，答六题。每个论断都能点回原始出处验证。</div>
+</header>
+
+<!-- ============ 1 个人解释 ============ -->
+<section>
+  <div class="num">01 / 个人解释</div>
+  <h2>一句话</h2>
+  <p class="oneliner">Agent 是让 <em>LLM 自己决定流程</em>的系统；流程写死在代码里的，叫 Workflow。</p>
+  <div class="mine">
+    <b>我的理解：</b>把 LLM 想成一个新员工——Workflow 是给他一张写死的流水线操作单，Agent 是给他一个目标和一套工具，让他自己想办法。员工能干多好，取决于两件事：他每一步能看到什么信息（上下文），以及有没有前人留下的操作手册（技能）。
+  </div>
+  <div class="fig">
+    <svg viewBox="0 0 680 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="workflow 与 agent 的区别">
+      <g font-family="PingFang SC, Microsoft YaHei, sans-serif">
+        <text x="0" y="18" font-size="14" font-weight="bold" fill="#1f1d1a">Workflow</text>
+        <rect x="0" y="32" width="110" height="40" rx="6" fill="none" stroke="#e6e2dc"/>
+        <text x="55" y="57" font-size="12.5" text-anchor="middle" fill="#1f1d1a">LLM</text>
+        <path d="M115 52 L145 52" stroke="#8a857e" stroke-width="1.2"/>
+        <path d="M140 47 L147 52 L140 57" fill="none" stroke="#8a857e" stroke-width="1.2"/>
+        <rect x="150" y="32" width="110" height="40" rx="6" fill="none" stroke="#e6e2dc"/>
+        <text x="205" y="57" font-size="12.5" text-anchor="middle" fill="#1f1d1a">LLM</text>
+        <path d="M265 52 L295 52" stroke="#8a857e" stroke-width="1.2"/>
+        <path d="M290 47 L297 52 L290 57" fill="none" stroke="#8a857e" stroke-width="1.2"/>
+        <rect x="300" y="32" width="110" height="40" rx="6" fill="none" stroke="#e6e2dc"/>
+        <text x="355" y="57" font-size="12.5" text-anchor="middle" fill="#1f1d1a">LLM</text>
+        <text x="425" y="57" font-size="12" fill="#8a857e">路径由代码预定义</text>
+
+        <text x="0" y="128" font-size="14" font-weight="bold" fill="#c15f3c">Agent</text>
+        <rect x="0" y="142" width="150" height="56" rx="6" fill="#f6e8e1"/>
+        <text x="75" y="166" font-size="13" font-weight="bold" text-anchor="middle" fill="#c15f3c">LLM 动态指挥</text>
+        <text x="75" y="186" font-size="11.5" text-anchor="middle" fill="#8a857e">下一步做什么、用哪个工具</text>
+        <path d="M155 170 Q 320 90 480 165" fill="none" stroke="#c15f3c" stroke-width="1.2" stroke-dasharray="4 3"/>
+        <path d="M472 158 L482 166 L470 170" fill="none" stroke="#c15f3c" stroke-width="1.2"/>
+        <rect x="485" y="145" width="120" height="46" rx="6" fill="none" stroke="#e6e2dc"/>
+        <text x="545" y="172" font-size="12.5" text-anchor="middle" fill="#1f1d1a">工具 / 环境</text>
+        <text x="150" y="216" font-size="12" fill="#8a857e">路径由模型在运行中自己规划，根据反馈调整</text>
+      </g>
+    </svg>
+    <div class="caption">原文定义：Workflows 是 "LLMs and tools are orchestrated through predefined code paths"；Agents 是 "LLMs dynamically direct their own processes and tool usage"。</div>
+  </div>
+  <p class="src">出处 · <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank">Anthropic《Building effective agents》（2024-12）↗</a></p>
+</section>
+
+<!-- ============ 2 核心机制 ============ -->
+<section>
+  <div class="num">02 / 核心机制</div>
+  <h2>LLM 是大脑，三个组件环绕</h2>
+  <p class="lead">Lilian Weng 给出的经典架构：LLM 作为 agent 的 brain，配上三种关键组件。</p>
+  <div class="fig">
+    <svg viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="agent 三组件架构">
+      <g font-family="PingFang SC, Microsoft YaHei, sans-serif">
+        <rect x="250" y="110" width="180" height="72" rx="8" fill="#f6e8e1"/>
+        <text x="340" y="140" font-size="16" font-weight="bold" text-anchor="middle" fill="#c15f3c">LLM</text>
+        <text x="340" y="164" font-size="12" text-anchor="middle" fill="#8a857e">functions as the brain</text>
+
+        <path d="M250 130 L170 80" stroke="#e6e2dc" stroke-width="1.2"/>
+        <path d="M250 146 L170 150" stroke="#e6e2dc" stroke-width="1.2"/>
+        <path d="M250 162 L170 220" stroke="#e6e2dc" stroke-width="1.2"/>
+
+        <rect x="0" y="40" width="160" height="72" rx="8" fill="none" stroke="#e6e2dc"/>
+        <text x="80" y="68" font-size="14" font-weight="bold" text-anchor="middle" fill="#1f1d1a">Planning 规划</text>
+        <text x="80" y="90" font-size="11.5" text-anchor="middle" fill="#8a857e">拆解子目标</text>
+        <text x="80" y="106" font-size="11.5" text-anchor="middle" fill="#8a857e">自我反思（ReAct）</text>
+
+        <rect x="0" y="120" width="160" height="72" rx="8" fill="none" stroke="#e6e2dc"/>
+        <text x="80" y="148" font-size="14" font-weight="bold" text-anchor="middle" fill="#1f1d1a">Memory 记忆</text>
+        <text x="80" y="170" font-size="11.5" text-anchor="middle" fill="#8a857e">短期 = 上下文窗口</text>
+        <text x="80" y="186" font-size="11.5" text-anchor="middle" fill="#8a857e">长期 = 外部向量库</text>
+
+        <rect x="0" y="200" width="160" height="72" rx="8" fill="none" stroke="#e6e2dc"/>
+        <text x="80" y="228" font-size="14" font-weight="bold" text-anchor="middle" fill="#1f1d1a">Tool Use 工具</text>
+        <text x="80" y="250" font-size="11.5" text-anchor="middle" fill="#8a857e">调用外部 API / 代码</text>
+        <text x="80" y="266" font-size="11.5" text-anchor="middle" fill="#8a857e">补齐模型缺失的能力</text>
+
+        <text x="480" y="130" font-size="13.5" fill="#1f1d1a">Anthropic 的说法等价：</text>
+        <text x="480" y="156" font-size="13.5" fill="#1f1d1a">增强型 LLM（augmented LLM）</text>
+        <text x="480" y="182" font-size="13.5" fill="#1f1d1a">= LLM + retrieval + tools</text>
+        <text x="480" y="208" font-size="13.5" fill="#1f1d1a">+ memory</text>
+        <text x="480" y="236" font-size="12" fill="#8a857e">它是一切 agentic 系统</text>
+        <text x="480" y="256" font-size="12" fill="#8a857e">的基本构件</text>
+      </g>
+    </svg>
+    <div class="caption">两份原始出处用的是同一张图的两种画法：Planning / Memory / Tool use 三组件，在 Anthropic 文中即 retrieval、tools、memory 三种增强。</div>
+  </div>
+  <p class="src">出处 · <a href="https://lilianweng.github.io/posts/2023-06-23-agent/" target="_blank">Lilian Weng《LLM Powered Autonomous Agents》（2023-06）↗</a>　<a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank">Anthropic §Augmented LLM ↗</a></p>
+</section>
+
+<!-- ============ 3 应用场景 ============ -->
+<section>
+  <div class="num">03 / 应用场景</div>
+  <h2>一个具体场景：让 Agent 修一个 Bug</h2>
+  <p class="lead">用户只说「登录接口报 500 了，帮我修」。没有固定路径可写——这正是 Agent 的地盘：</p>
+  <div class="fields">
+    <div class="field"><span class="fname">① 自己看报错</span><span class="fdesc">读日志 → 怀疑是数据库连接超时（模型自主决定先看什么）</span></div>
+    <div class="field"><span class="fname">② 自己查代码</span><span class="fdesc">用检索工具定位到连接池配置文件（Tool Use）</span></div>
+    <div class="field"><span class="fname">③ 自己做实验</span><span class="fdesc">跑测试脚本复现问题 → 改配置 → 再跑测试验证（Planning 的反思环节）</span></div>
+    <div class="field"><span class="fname">④ 自己收尾</span><span class="fdesc">提交修改并写清原因——每一步用哪个工具、走不走回头路，都是模型根据反馈现场决定的</span></div>
+  </div>
+  <p class="dim" style="margin-top:16px">对应的反面：如果需求是「每天凌晨把 CSV 转成固定格式报表」，步骤完全可预测，写死的 Workflow 更便宜、更稳定。</p>
+  <p class="src">出处 · <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank">Anthropic：Agent 适用于 open-ended problems，"difficult or impossible to predict the required number of steps" ↗</a></p>
+</section>
+
+<!-- ============ 4 易混淆与边界 ============ -->
+<section>
+  <div class="num">04 / 易混淆与使用边界</div>
+  <h2>两个最容易搞混的点</h2>
+  <div class="fields">
+    <div class="field">
+      <span class="fname">Agent ≠ 聊天机器人</span>
+      <span class="fdesc">聊天机器人只回答对话；Agent 能采取行动（调工具、改文件、执行代码）并根据结果继续。判断标准是「有没有行动闭环」。</span>
+    </div>
+    <div class="field">
+      <span class="fname">Agent ≠ 越强越好</span>
+      <span class="fdesc">原文反复强调：最成功的实现用简单、可组合的模式。Agent 的自主性意味着更高成本和累积误差（compounding errors），需要沙盒测试与护栏（guardrails）。能不用就不用。</span>
+    </div>
+  </div>
+  <p class="src">出处 · <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank">Anthropic §Agents（成本、compounding errors、guardrails）↗</a></p>
+</section>
+
+<!-- ============ 5 自测 ============ -->
+<section>
+  <div class="num">05 / 自测</div>
+  <h2>六道题，由易到难</h2>
+  <div id="quiz"></div>
+</section>
+
+<footer>
+  学习资料完 · 全部论断可点击溯源：
+  <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank">Anthropic《Building effective agents》</a>
+  <a href="https://lilianweng.github.io/posts/2023-06-23-agent/" target="_blank">Lilian Weng《LLM Powered Autonomous Agents》</a>
+</footer>
+</div>
+
+<script>
+const VERIFY_URL = "https://www.anthropic.com/engineering/building-effective-agents";
+
+const QUIZ = [
+  {
+    stars: "★☆☆",
+    q: "按 Anthropic 的定义，Workflow 与 Agent 的核心区别是什么？",
+    opts: [
+      "Workflow 用大模型，Agent 用小模型",
+      "Workflow 的流程由预定义代码路径编排；Agent 由 LLM 动态决定自己的流程与工具使用",
+      "Agent 一定联网，Workflow 一定离线",
+      "两者是一回事的不同叫法"
+    ],
+    a: 1,
+    why: "原文：Workflows are systems where LLMs and tools are orchestrated through predefined code paths；Agents——LLMs dynamically direct their own processes and tool usage。区别不在模型大小或联网，而在『谁决定流程』。"
+  },
+  {
+    stars: "★☆☆",
+    q: "增强型 LLM（augmented LLM）包含哪三种增强？",
+    opts: [
+      "检索（retrieval）、工具（tools）、记忆（memory）",
+      "联网、多线程、数据库",
+      "规划、反思、投票",
+      "提示词、上下文、微调"
+    ],
+    a: 0,
+    why: "原文：an LLM enhanced with augmentations such as retrieval, tools, and memory。它是所有 agentic 系统的基本构件，与 Lilian Weng 的 Planning / Memory / Tool use 架构一一对应。"
+  },
+  {
+    stars: "★★☆",
+    q: "在 Lilian Weng 的记忆分类中，『短期记忆』对应 LLM 的什么？",
+    opts: [
+      "微调时学到的权重",
+      "外部向量数据库",
+      "上下文窗口内的 in-context learning",
+      "硬盘上的聊天记录文件"
+    ],
+    a: 2,
+    why: "原文将所有 in-context learning 视为利用模型的短期记忆；长期记忆则是借助 external vector store 实现的跨会话保留与检索。"
+  },
+  {
+    stars: "★★☆",
+    q: "下面哪种任务更适合用 Agent，而不是 Workflow？",
+    opts: [
+      "每天定时把 CSV 转成固定格式的报表",
+      "客服问题先分类，再路由到固定的话术分支",
+      "开放式的研究任务：无法预测需要多少步、也写不出固定路径",
+      "对同一道数学题并行生成多个答案再投票"
+    ],
+    a: 2,
+    why: "原文：Agents can be used for open-ended problems where it's difficult or impossible to predict the required number of steps, and where you can't hardcode a fixed path。其余三项都是步骤可预测的明确任务，分别对应 prompt chaining、routing、parallelization 三种 workflow 模式。"
+  },
+  {
+    stars: "★★★",
+    q: "Anthropic 说『最成功的实现用简单、可组合的模式而非复杂框架』。这句话的正确理解是？",
+    opts: [
+      "永远不要用任何框架或工作流",
+      "从最简方案（优化单次 LLM 调用）开始，只有当评估证明简单方案不够时才增加复杂度",
+      "模型能力越强，越应该直接上多智能体架构",
+      "简单指代码量少，与效果无关"
+    ],
+    a: 1,
+    why: "原文：finding the simplest solution possible, and only increasing complexity when needed——甚至可能 not building agentic systems at all。复杂度必须由评估结果证明其必要性，而不是预设的。"
+  },
+  {
+    stars: "★★★",
+    q: "Agent 自主性带来的主要风险是什么？原文推荐的对策是什么？",
+    opts: [
+      "模型太慢——对策是换更大的显卡",
+      "成本更高 + 误差会沿步骤累积（compounding errors）——对策是在沙盒环境中充分测试并加护栏",
+      "上下文永远不够——对策是无限扩窗",
+      "没有风险，自主性百利而无一害"
+    ],
+    a: 1,
+    why: "原文：the autonomous nature of agents means higher costs, and the potential for compounding errors；recommend extensive testing in sandboxed environments, along with appropriate guardrails。一步小错进入下一步会放大，所以信任必须靠测试与护栏赢得。"
+  }
+];
+
+const box = document.getElementById("quiz");
+QUIZ.forEach((item) => {
+  const div = document.createElement("div");
+  div.className = "q";
+  div.innerHTML = `
+    <div class="q-head"><span class="stars">${item.stars}</span><span class="q-title">${item.q}</span></div>
+    <div class="opts"></div>
+    <div class="why">${item.why}　<a href="${VERIFY_URL}" target="_blank">回原文验证 ↗</a></div>`;
+  const opts = div.querySelector(".opts");
+  item.opts.forEach((t, oi) => {
+    const b = document.createElement("button");
+    b.className = "opt";
+    b.textContent = t;
+    b.onclick = () => {
+      opts.querySelectorAll(".opt").forEach((x, xi) => {
+        x.disabled = true;
+        if (xi === item.a) x.classList.add("correct");
+        else if (xi === oi) x.classList.add("wrong");
+      });
+      div.querySelector(".why").classList.add("show");
+    };
+    opts.appendChild(b);
+  });
+  box.appendChild(div);
+});
+</script>
+</body>
+</html>
