@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{概念名}} · 最小学习资料</title>
+<style>
+  :root {
+    --ink: #1f1d1a;
+    --muted: #8a857e;
+    --line: #e6e2dc;
+    --paper: #faf9f7;
+    --accent: #c15f3c;
+    --accent-soft: #f6e8e1;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.75;
+    padding: 60px 24px 100px;
+  }
+  .page { max-width: 720px; margin: 0 auto; }
+  header { margin-bottom: 72px; }
+  .kicker {
+    font-size: 12px; letter-spacing: 0.25em; color: var(--muted);
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  h1 { font-size: 34px; font-weight: 600; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); margin-top: 10px; font-size: 15px; }
+  section { margin-bottom: 88px; }
+  .num { font-size: 13px; color: var(--accent); font-weight: 600; letter-spacing: 0.1em; margin-bottom: 8px; }
+  h2 { font-size: 21px; font-weight: 600; margin-bottom: 20px; }
+  p.lead { font-size: 15.5px; max-width: 560px; }
+  .dim { color: var(--muted); font-size: 13.5px; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--line); }
+  a:hover { border-bottom-color: var(--accent); }
+  code, .mono {
+    font-family: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+    font-size: 0.9em; background: var(--accent-soft); padding: 1px 6px;
+    border-radius: 4px; color: var(--ink);
+  }
+  .src { margin-top: 18px; font-size: 12.5px; color: var(--muted); }
+  .oneliner { font-size: 24px; font-weight: 600; line-height: 1.6; margin-top: 28px; }
+  .oneliner em { font-style: normal; color: var(--accent); }
+  .fig { margin: 32px 0 8px; }
+  .fig svg { width: 100%; height: auto; display: block; }
+  .caption { font-size: 12.5px; color: var(--muted); margin-top: 10px; }
+  .fields { margin-top: 8px; }
+  .field {
+    display: flex; gap: 20px; padding: 16px 0; border-top: 1px solid var(--line);
+    align-items: baseline;
+  }
+  .field:last-child { border-bottom: 1px solid var(--line); }
+  .fname { font-family: Consolas, monospace; font-size: 14.5px; min-width: 130px; font-weight: 600; }
+  .fdesc { font-size: 14px; color: var(--muted); flex: 1; }
+  .fmeta { font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .q { border-top: 1px solid var(--line); padding: 28px 0; }
+  .q-head { display: flex; gap: 12px; align-items: baseline; margin-bottom: 6px; }
+  .stars { color: var(--accent); font-size: 13px; letter-spacing: 2px; white-space: nowrap; }
+  .q-title { font-size: 15.5px; font-weight: 600; }
+  .q p.dim { margin-bottom: 14px; }
+  .opts { display: flex; flex-direction: column; gap: 8px; }
+  .opt {
+    text-align: left; font-size: 14.5px; font-family: inherit;
+    background: none; border: 1px solid var(--line); border-radius: 8px;
+    padding: 11px 16px; cursor: pointer; color: var(--ink);
+    transition: border-color .15s, background .15s;
+  }
+  .opt:hover { border-color: var(--accent); }
+  .opt.correct { background: var(--accent-soft); border-color: var(--accent); font-weight: 600; }
+  .opt.wrong { color: var(--muted); text-decoration: line-through; }
+  .opt:disabled { cursor: default; }
+  .why {
+    display: none; margin-top: 12px; font-size: 13.5px; color: var(--muted);
+    border-left: 2px solid var(--accent); padding-left: 14px;
+  }
+  .why.show { display: block; }
+  footer {
+    margin-top: 96px; padding-top: 24px; border-top: 1px solid var(--line);
+    font-size: 13px; color: var(--muted);
+  }
+  footer a { margin-right: 20px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="kicker">Minimal Study Notes</div>
+  <h1>{{概念名}}</h1>
+  <div class="sub">{{一句副标题}}每个概念都能点回原始出处验证。</div>
+</header>
+
+<!-- {{章节区：01 一句话 / 02 核心机制(SVG) / 03 关键用法，每节结构：
+<section>
+  <div class="num">0N / 类型</div>
+  <h2>标题</h2>
+  <p class="lead">…</p>
+  <div class="fig"><svg viewBox="0 0 680 …">…</svg><div class="caption">…</div></div>
+  <div class="fields">…</div>
+  <p class="src">出处 · <a href="…" target="_blank">原始出处 ↗</a></p>
+</section>
+}} -->
+
+<section>
+  <div class="num">04 / 自测</div>
+  <h2>六道题，由易到难</h2>
+  <div id="quiz"></div>
+</section>
+
+<footer>
+  学习资料完 · 全部论断可点击溯源：
+  <a href="{{出处1}}" target="_blank">{{出处1名}}</a>
+  <a href="{{出处2}}" target="_blank">{{出处2名}}</a>
+</footer>
+</div>
+
+<script>
+const QUIZ = [
+  /* 6 题：★☆☆×2 记忆 → ★★☆×2 理解 → ★★★×2 应用/辨析
+  {
+    stars: "★☆☆",
+    q: "问题",
+    opts: ["A", "B", "C", "D"],
+    a: 0,               // 正确项索引
+    why: "解析，末尾附溯源链接由模板自动加"
+  }, */
+];
+const VERIFY_URL = "{{溯源链接}}";
+
+const box = document.getElementById("quiz");
+QUIZ.forEach((item) => {
+  const div = document.createElement("div");
+  div.className = "q";
+  div.innerHTML = `
+    <div class="q-head"><span class="stars">${item.stars}</span><span class="q-title">${item.q}</span></div>
+    <div class="opts"></div>
+    <div class="why">${item.why}　<a href="${VERIFY_URL}" target="_blank">回规范验证 ↗</a></div>`;
+  const opts = div.querySelector(".opts");
+  item.opts.forEach((t, oi) => {
+    const b = document.createElement("button");
+    b.className = "opt";
+    b.textContent = t;
+    b.onclick = () => {
+      opts.querySelectorAll(".opt").forEach((x, xi) => {
+        x.disabled = true;
+        if (xi === item.a) x.classList.add("correct");
+        else if (xi === oi) x.classList.add("wrong");
+      });
+      div.querySelector(".why").classList.add("show");
+    };
+    opts.appendChild(b);
+  });
+  box.appendChild(div);
+});
+</script>
+</body>
+</html>
