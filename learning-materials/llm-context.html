@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大模型的上下文 · 概念学习资料</title>
+<style>
+  :root {
+    --ink: #1f1d1a;
+    --muted: #8a857e;
+    --line: #e6e2dc;
+    --paper: #faf9f7;
+    --accent: #c15f3c;
+    --accent-soft: #f6e8e1;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.75;
+    padding: 60px 24px 100px;
+  }
+  .page { max-width: 720px; margin: 0 auto; }
+  header { margin-bottom: 72px; }
+  .kicker {
+    font-size: 12px; letter-spacing: 0.25em; color: var(--muted);
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  h1 { font-size: 34px; font-weight: 600; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); margin-top: 10px; font-size: 15px; }
+  section { margin-bottom: 88px; }
+  .num { font-size: 13px; color: var(--accent); font-weight: 600; letter-spacing: 0.1em; margin-bottom: 8px; }
+  h2 { font-size: 21px; font-weight: 600; margin-bottom: 20px; }
+  p.lead { font-size: 15.5px; max-width: 560px; }
+  .dim { color: var(--muted); font-size: 13.5px; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--line); }
+  a:hover { border-bottom-color: var(--accent); }
+  code, .mono {
+    font-family: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+    font-size: 0.9em; background: var(--accent-soft); padding: 1px 6px;
+    border-radius: 4px; color: var(--ink);
+  }
+  .src { margin-top: 18px; font-size: 12.5px; color: var(--muted); }
+  .oneliner { font-size: 24px; font-weight: 600; line-height: 1.6; margin-top: 28px; }
+  .oneliner em { font-style: normal; color: var(--accent); }
+  .mine {
+    margin-top: 24px; padding: 18px 22px; border-left: 2px solid var(--accent);
+    background: var(--accent-soft); border-radius: 0 8px 8px 0; font-size: 14.5px;
+  }
+  .mine b { color: var(--accent); }
+  .fig { margin: 32px 0 8px; }
+  .fig svg { width: 100%; height: auto; display: block; }
+  .caption { font-size: 12.5px; color: var(--muted); margin-top: 10px; }
+  .fields { margin-top: 8px; }
+  .field {
+    display: flex; gap: 20px; padding: 16px 0; border-top: 1px solid var(--line);
+    align-items: baseline;
+  }
+  .field:last-child { border-bottom: 1px solid var(--line); }
+  .fname { font-size: 14.5px; min-width: 150px; font-weight: 600; }
+  .fdesc { font-size: 14px; color: var(--muted); flex: 1; }
+  .q { border-top: 1px solid var(--line); padding: 28px 0; }
+  .q-head { display: flex; gap: 12px; align-items: baseline; margin-bottom: 6px; }
+  .stars { color: var(--accent); font-size: 13px; letter-spacing: 2px; white-space: nowrap; }
+  .q-title { font-size: 15.5px; font-weight: 600; }
+  .opts { display: flex; flex-direction: column; gap: 8px; }
+  .opt {
+    text-align: left; font-size: 14.5px; font-family: inherit;
+    background: none; border: 1px solid var(--line); border-radius: 8px;
+    padding: 11px 16px; cursor: pointer; color: var(--ink);
+    transition: border-color .15s, background .15s;
+  }
+  .opt:hover { border-color: var(--accent); }
+  .opt.correct { background: var(--accent-soft); border-color: var(--accent); font-weight: 600; }
+  .opt.wrong { color: var(--muted); text-decoration: line-through; }
+  .opt:disabled { cursor: default; }
+  .why {
+    display: none; margin-top: 12px; font-size: 13.5px; color: var(--muted);
+    border-left: 2px solid var(--accent); padding-left: 14px;
+  }
+  .why.show { display: block; }
+  footer {
+    margin-top: 96px; padding-top: 24px; border-top: 1px solid var(--line);
+    font-size: 13px; color: var(--muted);
+  }
+  footer a { margin-right: 20px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="kicker">Concept · Study Note 02</div>
+  <h1>大模型的上下文（Context）</h1>
+  <div class="sub">读四节，答六题。每个论断都能点回原始出处验证。</div>
+</header>
+
+<!-- ============ 1 个人解释 ============ -->
+<section>
+  <div class="num">01 / 个人解释</div>
+  <h2>一句话</h2>
+  <p class="oneliner">上下文 = 模型每次采样时能看到的<em>全部 token</em>；它是有限资源，且越堆越"糊"。</p>
+  <div class="mine">
+    <b>我的理解：</b>上下文窗口像一张只能摊开一页的书桌——系统提示、工具说明、对话历史、检索来的资料全都要摆在这一页上。东西摆太多，注意力就被摊薄，重要的反而看不清。所以关键动作不是"多放"，而是"放对"：每次只放当前这一步最需要的高信号内容。
+  </div>
+  <div class="fig">
+    <svg viewBox="0 0 680 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="context rot 曲线">
+      <g font-family="PingFang SC, Microsoft YaHei, sans-serif">
+        <rect x="40" y="20" width="560" height="120" rx="8" fill="none" stroke="#e6e2dc"/>
+        <text x="60" y="45" font-size="13" font-weight="bold" fill="#1f1d1a">上下文窗口（一页书桌）</text>
+        <rect x="60" y="60" width="120" height="60" rx="5" fill="#f6e8e1"/>
+        <text x="120" y="95" font-size="12" text-anchor="middle" fill="#c15f3c">系统提示+工具</text>
+        <rect x="195" y="60" width="120" height="60" rx="5" fill="none" stroke="#e6e2dc"/>
+        <text x="255" y="95" font-size="12" text-anchor="middle" fill="#1f1d1a">对话历史</text>
+        <rect x="330" y="60" width="120" height="60" rx="5" fill="none" stroke="#e6e2dc"/>
+        <text x="390" y="95" font-size="12" text-anchor="middle" fill="#1f1d1a">检索结果</text>
+        <rect x="465" y="60" width="115" height="60" rx="5" fill="none" stroke="#e6e2dc"/>
+        <text x="522" y="95" font-size="12" text-anchor="middle" fill="#1f1d1a">…不断堆入</text>
+
+        <path d="M60 200 L440 200" stroke="#8a857e" stroke-width="1"/>
+        <path d="M60 200 L60 150" stroke="#8a857e" stroke-width="1"/>
+        <path d="M60 165 Q 200 158 300 170 T 440 190" fill="none" stroke="#c15f3c" stroke-width="2"/>
+        <text x="470" y="185" font-size="12" fill="#c15f3c" font-weight="bold">context rot</text>
+        <text x="60" y="176" font-size="11" fill="#8a857e">召回准确率</text>
+        <text x="360" y="172" font-size="11" fill="#8a857e">token 越多，回忆越不准</text>
+      </g>
+    </svg>
+    <div class="caption">context rot 原文定义："as the number of tokens in the context window increases, the model's ability to accurately recall information from that context decreases"——是性能梯度（gradient），不是硬悬崖。</div>
+  </div>
+  <p class="src">出处 · <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank">Anthropic《Effective context engineering for AI agents》（2025-09）↗</a></p>
+</section>
+
+<!-- ============ 2 核心机制 ============ -->
+<section>
+  <div class="num">02 / 核心机制</div>
+  <h2>注意力预算：为什么"放对"比"放多"重要</h2>
+  <p class="lead">上下文工程（context engineering）是提示工程的演进：从"怎么写一条指令"，变成"每一轮推理该把哪些信息放进窗口"的持续筛选。</p>
+  <div class="fig">
+    <svg viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="三种长任务上下文管理技术">
+      <g font-family="PingFang SC, Microsoft YaHei, sans-serif">
+        <rect x="0" y="14" width="212" height="130" rx="8" fill="none" stroke="#e6e2dc"/>
+        <text x="106" y="44" font-size="14" font-weight="bold" text-anchor="middle" fill="#c15f3c">Compaction 压缩</text>
+        <text x="106" y="70" font-size="11.5" text-anchor="middle" fill="#8a857e">对话快到窗口上限时</text>
+        <text x="106" y="90" font-size="11.5" text-anchor="middle" fill="#8a857e">把历史提炼成摘要，</text>
+        <text x="106" y="110" font-size="11.5" text-anchor="middle" fill="#8a857e">带着摘要重新开窗。</text>
+        <text x="106" y="134" font-size="11" text-anchor="middle" fill="#1f1d1a">适合：超长对话</text>
+
+        <rect x="234" y="14" width="212" height="130" rx="8" fill="none" stroke="#e6e2dc"/>
+        <text x="340" y="44" font-size="14" font-weight="bold" text-anchor="middle" fill="#c15f3c">结构化笔记</text>
+        <text x="340" y="70" font-size="11.5" text-anchor="middle" fill="#8a857e">把关键状态写到窗口外</text>
+        <text x="340" y="90" font-size="11.5" text-anchor="middle" fill="#8a857e">（如 NOTES.md、待办），</text>
+        <text x="340" y="110" font-size="11.5" text-anchor="middle" fill="#8a857e">之后随时取回。</text>
+        <text x="340" y="134" font-size="11" text-anchor="middle" fill="#1f1d1a">适合：跨会话持久记忆</text>
+
+        <rect x="468" y="14" width="212" height="130" rx="8" fill="none" stroke="#e6e2dc"/>
+        <text x="574" y="44" font-size="14" font-weight="bold" text-anchor="middle" fill="#c15f3c">子代理架构</text>
+        <text x="574" y="70" font-size="11.5" text-anchor="middle" fill="#8a857e">子代理用干净窗口</text>
+        <text x="574" y="90" font-size="11.5" text-anchor="middle" fill="#8a857e">深挖数万 token，</text>
+        <text x="574" y="110" font-size="11.5" text-anchor="middle" fill="#8a857e">只回传 1-2k 摘要。</text>
+        <text x="574" y="134" font-size="11" text-anchor="middle" fill="#1f1d1a">适合：大规模探索</text>
+
+        <text x="0" y="176" font-size="13.5" fill="#1f1d1a">共同目标：把有限注意力花在"最小的高信号 token 集"上（smallest possible set of high-signal tokens）。</text>
+      </g>
+    </svg>
+    <div class="caption">三种技术对应三种"窗口装不下"的情况：装不下历史、装不下状态、装不下探索过程。</div>
+  </div>
+  <p class="src">出处 · <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank">Anthropic §Compaction / §Structured note-taking / §Sub-agent architectures ↗</a></p>
+</section>
+
+<!-- ============ 3 应用场景 ============ -->
+<section>
+  <div class="num">03 / 应用场景</div>
+  <h2>一个具体场景：编程智能体的一场长会话</h2>
+  <p class="lead">一个智能体连续工作几小时修代码，上下文早就爆了。原文（Claude Code）的解法组合拳：</p>
+  <div class="fields">
+    <div class="field"><span class="fname">压缩历史</span><span class="fdesc">把几十轮工具输出摘要保留——架构决策、未解决的 bug 留下，冗余输出丢弃（tool result clearing）</span></div>
+    <div class="field"><span class="fname">记 NOTES.md</span><span class="fdesc">关键进展写成结构化笔记持久保存，窗口重置后先读笔记再继续</span></div>
+    <div class="field"><span class="fname">派子代理</span><span class="fdesc">让子代理去通读整个代码库（数万 token），只把 1-2k token 的结论带回主上下文</span></div>
+  </div>
+  <p class="dim" style="margin-top:16px">每一招都在回答同一个问题：这一步，模型真正需要看到的是什么？</p>
+  <p class="src">出处 · <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank">Anthropic：Claude Code 压缩实践与 agentic memory 案例 ↗</a></p>
+</section>
+
+<!-- ============ 4 易混淆与边界 ============ -->
+<section>
+  <div class="num">04 / 易混淆与使用边界</div>
+  <h2>两个最容易搞混的点</h2>
+  <div class="fields">
+    <div class="field">
+      <span class="fname">上下文 ≠ 记忆</span>
+      <span class="fdesc">短期记忆借上下文窗口实现，但长期记忆靠外部向量库等窗口之外的存储。窗口清空后，"记得住"靠的是能把外部存储的内容再取回来。</span>
+    </div>
+    <div class="field">
+      <span class="fname">窗口更大 ≠ 效果更好</span>
+      <span class="fdesc">大窗口只解决"装得下"，不解决"看得清"——context rot 依然存在（成因：n² 注意力关系被摊薄、训练数据以短序列为主、位置编码插值退化）。工程目标始终是高信号的小集合，不是无限大杂烩。</span>
+    </div>
+  </div>
+  <p class="src">出处 · <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank">Anthropic §Context rot（三大成因）↗</a>　<a href="https://lilianweng.github.io/posts/2023-06-23-agent/" target="_blank">Lilian Weng：Memory 类型与外部向量存储 ↗</a></p>
+</section>
+
+<!-- ============ 5 自测 ============ -->
+<section>
+  <div class="num">05 / 自测</div>
+  <h2>六道题，由易到难</h2>
+  <div id="quiz"></div>
+</section>
+
+<footer>
+  学习资料完 · 全部论断可点击溯源：
+  <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank">Anthropic《Effective context engineering for AI agents》</a>
+  <a href="https://lilianweng.github.io/posts/2023-06-23-agent/" target="_blank">Lilian Weng《LLM Powered Autonomous Agents》</a>
+</footer>
+</div>
+
+<script>
+const VERIFY_URL = "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents";
+
+const QUIZ = [
+  {
+    stars: "★☆☆",
+    q: "按原文定义，「上下文（context）」指的是？",
+    opts: [
+      "模型训练时用过的全部数据",
+      "从 LLM 采样时包含在内的一组 token（系统提示、历史、检索内容等）",
+      "模型的参数量和权重文件",
+      "用户输入的那一句提示词"
+    ],
+    a: 1,
+    why: "原文：Context refers to the set of tokens included when sampling from a large-language model。它远不止用户那句话——工具、MCP、外部数据、消息历史都在其中。"
+  },
+  {
+    stars: "★☆☆",
+    q: "context engineering 与 prompt engineering 的关系，原文怎么说？",
+    opts: [
+      "两个完全无关的概念",
+      "prompt engineering 已经过时被淘汰",
+      "context engineering 是 prompt engineering 的自然演进：从『怎么写指令』扩展到『管理整个上下文状态』",
+      "它们是同一件事的两种叫法"
+    ],
+    a: 2,
+    why: "原文：we view context engineering as the natural progression of prompt engineering。区别在于：prompt engineering 关注指令怎么写，context engineering 是每次推理都迭代进行的整窗信息筛选。"
+  },
+  {
+    stars: "★★☆",
+    q: "「context rot（上下文腐烂）」描述的是什么现象？",
+    opts: [
+      "上下文超过窗口上限后内容被直接截断丢失",
+      "窗口内 token 越多，模型从上下文中准确召回信息的能力越差",
+      "模型对话超过一定轮数会自动重启",
+      "旧模型的上下文会随时间过期失效"
+    ],
+    a: 1,
+    why: "原文：as the number of tokens in the context window increases, the model's ability to accurately recall information from that context decreases。注意它是渐变的性能梯度（gradient），不是硬悬崖。"
+  },
+  {
+    stars: "★★☆",
+    q: "下列哪项【不是】原文给出的 context rot 成因？",
+    opts: [
+      "Transformer 注意力是 n² 关系，token 越多越被摊薄",
+      "训练数据中短序列远多于长序列，模型缺少处理超长依赖的经验",
+      "位置编码插值让模型适配长序列时有损",
+      "模型会故意忽略排在上下文中间的内容来省电"
+    ],
+    a: 3,
+    why: "前三项都是原文列出的架构与训练层面成因（n² pairwise relationships、训练分布、position encoding interpolation）。第四项是玩笑——但『lost in the middle』式的真实忽略现象另当别论，其根源仍是注意力被摊薄。"
+  },
+  {
+    stars: "★★★",
+    q: "为什么「把所有可能有用的信息都塞进上下文」是坏策略？",
+    opts: [
+      "因为 token 太贵，纯粹为了省钱",
+      "因为 LLM 有有限的注意力预算（attention budget）：每加一个 token 都在消耗它，边际收益递减，应追求最小的高信号 token 集",
+      "因为上下文窗口装不下任何超过 1000 token 的内容",
+      "因为塞太多会导致模型直接报错拒绝回答"
+    ],
+    a: 1,
+    why: "原文：Context must be treated as a finite resource with diminishing marginal returns；good context engineering means finding the smallest possible set of high-signal tokens。省钱只是副产品，核心是注意力被摊薄后信号反而变弱。"
+  },
+  {
+    stars: "★★★",
+    q: "三种长任务技术怎么选：会话快到窗口上限 / 任务状态要跨会话保留 / 需要通读几万 token 的代码库，分别对应？",
+    opts: [
+      "子代理 / 压缩 / 结构化笔记",
+      "压缩 / 结构化笔记 / 子代理",
+      "结构化笔记 / 子代理 / 压缩",
+      "三种情况都用压缩就够了"
+    ],
+    a: 1,
+    why: "Compaction：把接近上限的对话提炼成摘要再重开窗口；Structured note-taking（agentic memory）：把状态写到窗口外再取回，跨会话继续；Sub-agent：干净窗口深度探索，只回传 1-2k token 摘要。选型的关键是分辨『装不下』的到底是什么。"
+  }
+];
+
+const box = document.getElementById("quiz");
+QUIZ.forEach((item) => {
+  const div = document.createElement("div");
+  div.className = "q";
+  div.innerHTML = `
+    <div class="q-head"><span class="stars">${item.stars}</span><span class="q-title">${item.q}</span></div>
+    <div class="opts"></div>
+    <div class="why">${item.why}　<a href="${VERIFY_URL}" target="_blank">回原文验证 ↗</a></div>`;
+  const opts = div.querySelector(".opts");
+  item.opts.forEach((t, oi) => {
+    const b = document.createElement("button");
+    b.className = "opt";
+    b.textContent = t;
+    b.onclick = () => {
+      opts.querySelectorAll(".opt").forEach((x, xi) => {
+        x.disabled = true;
+        if (xi === item.a) x.classList.add("correct");
+        else if (xi === oi) x.classList.add("wrong");
+      });
+      div.querySelector(".why").classList.add("show");
+    };
+    opts.appendChild(b);
+  });
+  box.appendChild(div);
+});
+</script>
+</body>
+</html>
